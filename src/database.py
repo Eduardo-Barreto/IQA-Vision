@@ -1,36 +1,112 @@
 from parts import Part
 import requests
-from json import dumps
 
 
 class Database:
-    def __init__(self, url):
+    def __init__(self, url: str) -> None:
+        '''
+        Construtor da classe Database
+
+        Parâmetros
+        ----------
+        url: str
+            URL do banco de dados
+
+        Examples
+        --------
+        >>> db = Database('https://my-database.firebaseio.com')
+        '''
         self.url = url
 
-    def _part_to_json(self, part: Part):
-        part_id = part.ID
-        part = part.__dict__
-        part["holes"] = [hole.__dict__ for hole in part["holes"]]
-        part.pop("ID")
-        return part_id, dumps(part)
+    def part_exists(self, part_id: int) -> None:
+        '''
+        Verifica se uma peça existe no banco de dados
 
-    def part_exists(self, part_id: int):
+        Parâmetros
+        ----------
+        part_id: int
+            ID da peça
+
+        Retorno
+        -------
+        exists: bool
+            True se a peça existe, False caso contrário
+
+        Examples
+        --------
+        >>> db.part_exists(1)
+        True
+        '''
         link = requests.get(f'{self.url}/parts/{part_id}/.json')
         return link.status_code == 200 and link.json() is not None
 
-    def get_part_by_id(self, part_id: int):
+    def get_part_by_id(self, part_id: int) -> Part:
+        '''
+        Retorna uma peça no banco de dados pelo seu ID
+
+        Parâmetros
+        ----------
+        part_id: int
+            ID da peça
+
+        Retorno
+        -------
+        part: Part
+            Peça
+
+        Examples
+        --------
+        >>> db.get_part_by_id(1)
+        Part(ID=1, name='Part 1', holes=[], rightCounter=0, wrongCounter=0)
+        '''
         get_request = requests.get(f'{self.url}/parts/{part_id}/.json')
         part = Part(part_id)
         part.load_json(get_request.json())
         return part
 
-    def get_part_by_name(self, name: str):
+    def get_part_by_name(self, name: str) -> Part:
+        '''
+        Retorna uma peça no banco de dados pelo seu nome
+
+        Parâmetros
+        ----------
+        name: str
+            Nome da peça
+
+        Retorno
+        -------
+        part: Part
+            Peça
+
+        Examples
+        --------
+        >>> db.get_part_by_name('Part 1')
+        Part(ID=1, name='Part 1', holes=[], rightCounter=0, wrongCounter=0)
+        '''
         get_request = requests.get(f'{self.url}/parts/.json')
         for part_id, part in get_request.json().items():
             if part["name"] == name:
                 return self.get_part_by_id(part_id)
 
-    def create_part(self, part: Part):
+    def create_part(self, part: Part) -> int:
+        '''
+        Cria uma peça no banco de dados
+
+        Parâmetros
+        ----------
+        part: Part
+            Peça a ser criada
+
+        Retorno
+        -------
+        status_code: int
+            Código HTTP de status da requisição
+
+        Examples
+        --------
+        >>> db.create_part(Part(1, 'Part 1'))
+        200
+        '''
         part_id, part = part.to_json()
 
         create_request = requests.put(
@@ -38,7 +114,25 @@ class Database:
         )
         return create_request.status_code
 
-    def update_part(self, part: Part):
+    def update_part(self, part: Part) -> int:
+        '''
+        Atualiza uma peça no banco de dados
+
+        Parâmetros
+        ----------
+        part: Part
+            Peça a ser atualizada
+
+        Retorno
+        -------
+        status_code: int
+            Código HTTP de status da requisição
+
+        Examples
+        --------
+        >>> db.update_part(Part(1, 'Part 1'))
+        200
+        '''
         part_id, part = part.to_json()
 
         update_request = requests.patch(
@@ -46,7 +140,25 @@ class Database:
         )
         return update_request.status_code
 
-    def delete_part(self, part: Part):
+    def delete_part(self, part: Part) -> int:
+        '''
+        Deleta uma peça no banco de dados
+
+        Parâmetros
+        ----------
+        part: Part
+            Peça a ser deletada
+
+        Retorno
+        -------
+        status_code: int
+            Código HTTP de status da requisição
+
+        Examples
+        --------
+        >>> db.delete_part(Part(1, 'Part 1'))
+        200
+        '''
         part_id, part = part.to_json()
 
         delete_request = requests.delete(
