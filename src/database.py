@@ -18,13 +18,13 @@ class Database:
         '''
         self.url = url
 
-    def part_exists(self, part_id: int) -> None:
+    def part_exists(self, part_id: str) -> bool:
         '''
         Verifica se uma peça existe no banco de dados
 
         Parâmetros
         ----------
-        part_id: int
+        part_id: str
             ID da peça
 
         Retorno
@@ -34,19 +34,19 @@ class Database:
 
         Examples
         --------
-        >>> db.part_exists(1)
+        >>> db.part_exists('1')
         True
         '''
         link = requests.get(f'{self.url}/parts/{part_id}/.json')
         return link.status_code == 200 and link.json() is not None
 
-    def get_part_by_id(self, part_id: int) -> Part:
+    def get_part_by_id(self, part_id: str) -> Part:
         '''
         Retorna uma peça no banco de dados pelo seu ID
 
         Parâmetros
         ----------
-        part_id: int
+        part_id: str
             ID da peça
 
         Retorno
@@ -56,8 +56,8 @@ class Database:
 
         Examples
         --------
-        >>> db.get_part_by_id(1)
-        Part(ID=1, name='Part 1', holes=[], rightCounter=0, wrongCounter=0)
+        >>> db.get_part_by_id('1')
+        Part(ID='1', name='Part 1', holes=[], rightCounter=0, wrongCounter=0)
         '''
         get_request = requests.get(f'{self.url}/parts/{part_id}/.json')
         part = Part(part_id)
@@ -81,12 +81,14 @@ class Database:
         Examples
         --------
         >>> db.get_part_by_name('Part 1')
-        Part(ID=1, name='Part 1', holes=[], rightCounter=0, wrongCounter=0)
+        Part(ID='1', name='Part 1', holes=[], rightCounter=0, wrongCounter=0)
         '''
         get_request = requests.get(f'{self.url}/parts/.json')
         for part_id, part in get_request.json().items():
             if part["name"] == name:
                 return self.get_part_by_id(part_id)
+
+        return Part('')
 
     def create_part(self, part: Part) -> int:
         '''
