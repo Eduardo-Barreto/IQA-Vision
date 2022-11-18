@@ -15,7 +15,7 @@ class Hole:
             Tipo do furo
 
         position: dict
-            Posição do furo
+            quadrante e porcentagem em X e Y do furo
 
         size: float
             Tamanho do furo
@@ -25,9 +25,22 @@ class Hole:
 
         Examples
         --------
-        >>> hole = Hole('circular', {'x': 0, 'y': 0}, 10, 0.1)
+        >>> hole = Hole('circular', 1, (0.72, 0.45), 10, 0.2)
         '''
         self.hole_type = hole_type
-        self.position = position
+        self.quadrant = position['quadrant']
+        self.position = (position['x'], position['y'])
         self.size = size
         self.tolerance = tolerance
+
+    def to_dict(self):
+        return {
+            "hole_type": self.hole_type,
+            "position": {
+                "quadrant": self.quadrant,
+                "x": self.position[0],
+                "y": self.position[1]
+            },
+            "size": self.size,
+            "tolerance": self.tolerance
+        }
