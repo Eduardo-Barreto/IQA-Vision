@@ -1,6 +1,6 @@
 from sys import path
 
-path.append('./src')
+path.append('../src')
 
 from parts import Part
 from holes import Hole
@@ -8,9 +8,9 @@ from database import Database
 from os import environ
 
 db = Database(environ['databaseURL'])
-
-example_hole = Hole('hexagonal', {'x': 11, 'y': 22}, 2, 0.1)
-example_part = Part('9999', 'example_part', [example_hole], 0, 0)
+j = {'name': 'A+', 'holes': [{'hole_type': 'circular', 'position': {'quadrant': 1, 'x': 1, 'y': 1}, 'size': 0.3813155386081983, 'tolerance': 0.2}, {'hole_type': 'circular', 'position': {'quadrant': 0, 'x': 0.724, 'y': 0.445}, 'size': 0.22878932316491896, 'tolerance': 0.333}, {'hole_type': 'circular', 'position': {'quadrant': 2, 'x': 0.276, 'y': 0.555}, 'size': 0.22878932316491896, 'tolerance': 0.333}, {'hole_type': 'hexagonal', 'position': {'quadrant': 1, 'x': 0.237, 'y': 0.384}, 'size': 0.22878932316491896, 'tolerance': 0.333}, {'hole_type': 'hexagonal', 'position': {'quadrant': 1, 'x': 0.542, 'y': 0.384}, 'size': 0.22878932316491896, 'tolerance': 0.333}, {'hole_type': 'hexagonal', 'position': {'quadrant': 1, 'x': 0.237, 'y': 0.877}, 'size': 0.22878932316491896, 'tolerance': 0.333}, {'hole_type': 'cross', 'position': {'quadrant': 3, 'x': 0.724, 'y': 0.555}, 'size': 0.22878932316491896, 'tolerance': 0.333}], 'rightCounter': 0, 'wrongCounter': 0}
+example_part = Part('1001')
+example_part.load_json(j)
 
 
 def get_part_by_id():
