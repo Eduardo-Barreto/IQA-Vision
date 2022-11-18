@@ -252,11 +252,12 @@ class PartImage:
         for hole in self.holes:
             x = int(hole.position[0])
             y = int(hole.position[1])
-            size = abs(self.percentage_to_size(hole.size, hole.quadrant))
-            x1 = int(x - size)
-            y1 = int(y - size)
-            x2 = int(x + size)
-            y2 = int(y + size)
+            hole_size = hole.size + (hole.size*hole.tolerance)
+            size = abs(self.percentage_to_size(hole_size, hole.quadrant))
+            x1 = int(x - size/2)
+            y1 = int(y - size/2)
+            x2 = int(x + size/2)
+            y2 = int(y + size/2)
             crop = self.image[y1:y2, x1:x2]
             crop = cv.resize(crop, (240, 240))
             cropped.append(crop)

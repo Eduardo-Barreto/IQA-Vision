@@ -1,9 +1,9 @@
 from sys import path
-import os
 path.append('../src')
-
-from image import PartImage
 from database import Database
+from image import PartImage
+import os
+
 
 db = Database(os.environ['databaseURL'])
 
@@ -30,6 +30,7 @@ for file in files:
             triangles.append((x, y))
 
     image = PartImage(file, triangles, part, True)
+    image.draw_quadrants()
     image.show()
     image.get_cropped_holes()
 
