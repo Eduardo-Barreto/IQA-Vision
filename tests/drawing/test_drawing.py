@@ -7,8 +7,8 @@ import os
 
 db = Database(os.environ['databaseURL'])
 
-path_images = './drawing/images/A'
-part = db.get_part_by_id('1001')
+path_images = './drawing/images/B'
+part = db.get_part_by_id('1002')
 
 # get all images in the folder
 files = os.listdir(path_images)

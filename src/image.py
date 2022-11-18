@@ -252,7 +252,7 @@ class PartImage:
         for hole in self.holes:
             x = int(hole.position[0])
             y = int(hole.position[1])
-            hole_size = hole.size + (hole.size*hole.tolerance)
+            hole_size = hole.size + (hole.size*(hole.tolerance+0.2))
             size = abs(self.percentage_to_size(hole_size, hole.quadrant))
             x1 = int(x - size/2)
             y1 = int(y - size/2)

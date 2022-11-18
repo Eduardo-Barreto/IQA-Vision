@@ -8,8 +8,9 @@ from database import Database
 from os import environ
 
 db = Database(environ['databaseURL'])
-j = {'name': 'A+', 'holes': [{'hole_type': 'circular', 'position': {'quadrant': 1, 'x': 1, 'y': 1}, 'size': 0.3813155386081983, 'tolerance': 0.2}, {'hole_type': 'circular', 'position': {'quadrant': 0, 'x': 0.724, 'y': 0.445}, 'size': 0.22878932316491896, 'tolerance': 0.333}, {'hole_type': 'circular', 'position': {'quadrant': 2, 'x': 0.276, 'y': 0.555}, 'size': 0.22878932316491896, 'tolerance': 0.333}, {'hole_type': 'hexagonal', 'position': {'quadrant': 1, 'x': 0.237, 'y': 0.384}, 'size': 0.22878932316491896, 'tolerance': 0.333}, {'hole_type': 'hexagonal', 'position': {'quadrant': 1, 'x': 0.542, 'y': 0.384}, 'size': 0.22878932316491896, 'tolerance': 0.333}, {'hole_type': 'hexagonal', 'position': {'quadrant': 1, 'x': 0.237, 'y': 0.877}, 'size': 0.22878932316491896, 'tolerance': 0.333}, {'hole_type': 'cross', 'position': {'quadrant': 3, 'x': 0.724, 'y': 0.555}, 'size': 0.22878932316491896, 'tolerance': 0.333}], 'rightCounter': 0, 'wrongCounter': 0}
-example_part = Part('1001')
+
+j = {'name': 'B', 'holes': [{'hole_type': 'circular', 'position': {'quadrant': 0, 'x': 0.191, 'y': 0.507}, 'size': 0.4575786463298379, 'tolerance': 0.2}, {'hole_type': 'circular', 'position': {'quadrant': 0, 'x': 0.763, 'y': 1}, 'size': 0.2669208770257388, 'tolerance': 0.333}, {'hole_type': 'hexagonal', 'position': {'quadrant': 1, 'x': 0.237, 'y': 0.384}, 'size': 0.22878932316491896, 'tolerance': 0.333}, {'hole_type': 'hexagonal', 'position': {'quadrant': 2, 'x': 0.237, 'y': 0.616}, 'size': 0.22878932316491896, 'tolerance': 0.333}, {'hole_type': 'cross', 'position': {'quadrant': 3, 'x': 0, 'y': 0.555}, 'size': 0.22878932316491896, 'tolerance': 0.333}], 'rightCounter': 0, 'wrongCounter': 0}
+example_part = Part('1002')
 example_part.load_json(j)
 
 
