@@ -31,7 +31,7 @@ class Part:
         wrongCounter: int
             Peças erradas contadas
 
-        Examples
+        Exemplos
         --------
         >>> part = Part(
             '1',
@@ -61,7 +61,7 @@ class Part:
         equal: bool
             True se o json das peças forem iguais, False caso contrário
 
-        Examples
+        Exemplos
         --------
         >>> part1 = Part(
             '1',
@@ -90,7 +90,7 @@ class Part:
             ID da peça
         json: str
             Peça em json
-        Examples
+        Exemplos
         --------
         >>> part = Part(
                 '1',
@@ -132,7 +132,7 @@ class Part:
         json: str
             Peça em json
 
-        Examples
+        Exemplos
         --------
         >>> part = Part('1')
         >>> part.load_json(

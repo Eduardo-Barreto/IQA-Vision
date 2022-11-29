@@ -12,7 +12,7 @@ class Database:
         url: str
             URL do banco de dados
 
-        Examples
+        Exemplos
         --------
         >>> db = Database('https://my-database.firebaseio.com')
         '''
@@ -32,7 +32,7 @@ class Database:
         exists: bool
             True se a peça existe, False caso contrário
 
-        Examples
+        Exemplos
         --------
         >>> db.part_exists('1')
         True
@@ -54,7 +54,7 @@ class Database:
         part: Part
             Peça
 
-        Examples
+        Exemplos
         --------
         >>> db.get_part_by_id('1')
         Part(ID='1', name='Part 1', holes=[], rightCounter=0, wrongCounter=0)
@@ -78,7 +78,7 @@ class Database:
         part: Part
             Peça
 
-        Examples
+        Exemplos
         --------
         >>> db.get_part_by_name('Part 1')
         Part(ID='1', name='Part 1', holes=[], rightCounter=0, wrongCounter=0)
@@ -104,7 +104,7 @@ class Database:
         status_code: int
             Código HTTP de status da requisição
 
-        Examples
+        Exemplos
         --------
         >>> db.create_part(Part(1, 'Part 1'))
         200
@@ -130,7 +130,7 @@ class Database:
         status_code: int
             Código HTTP de status da requisição
 
-        Examples
+        Exemplos
         --------
         >>> db.update_part(Part(1, 'Part 1'))
         200
@@ -156,7 +156,7 @@ class Database:
         status_code: int
             Código HTTP de status da requisição
 
-        Examples
+        Exemplos
         --------
         >>> db.delete_part(Part(1, 'Part 1'))
         200
