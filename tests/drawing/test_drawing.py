@@ -4,11 +4,10 @@ from database import Database
 from image import PartImage
 import os
 
-
 db = Database(os.environ['databaseURL'])
 
-path_images = './drawing/images/B'
-part = db.get_part_by_id('1002')
+path_images = './drawing/images/A'
+part = db.get_part_by_id('1001')
 
 # get all images in the folder
 files = os.listdir(path_images)
@@ -30,6 +29,7 @@ for file in files:
             triangles.append((x, y))
 
     image = PartImage(file, triangles, part, True)
+    image.rotate_part()
     image.draw_quadrants()
     image.show()
     image.get_cropped_holes()

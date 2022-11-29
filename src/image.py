@@ -33,8 +33,38 @@ class PartImage:
         self.image = cv.imread(image_path, 0)
         self.draw = cv.imread(image_path, 0)
 
-        self.a, self.b, self.c, self.d = triangles
+        self.a, self.b, self.c, self.d = self.sort_triangles(triangles)
 
+        self.part = part
+        self.calcule_all()
+
+    def sort_triangles(self, triangles: list) -> list:
+        sorted_x = sorted(triangles, key=lambda x: x[0])
+        sorted_y = sorted(triangles, key=lambda x: x[1])
+
+        larger_x = sorted_x[-2:]
+        larger_y = sorted_y[-2:]
+
+        a, b, c, d = 0, 0, 0, 0
+
+        for item in triangles:
+            if item in larger_x:
+                if item in larger_y:
+                    c = item
+                    continue
+                else:
+                    b = item
+                    continue
+
+            if item in larger_y:
+                d = item
+                continue
+            else:
+                a = item
+
+        return [a, b, c, d]
+
+    def calcule_all(self):
         self.lineAB = (self.a, self.b)
         self.lineBC = (self.b, self.c)
         self.lineCD = (self.c, self.d)
@@ -53,13 +83,42 @@ class PartImage:
         )
 
         self.quadrants = self.get_quadrants()
-        self.part = part
         self.holes = self.get_holes()
 
     def midpoint(self, a: tuple, b: tuple) -> tuple:
+        '''
+        Calcula o ponto médio de uma reta
+
+        Parâmetros
+        ----------
+
+        a: tuple
+            Ponto inicial da reta
+
+        b: tuple
+            Ponto final da reta
+
+        Retorno
+        -------
+        tuple
+            Ponto médio da reta
+
+        Exemplos
+        -------
+        >>> midpoint((0, 0), (10, 10))
+        (5, 5)
+        '''
         return ((a[0] + b[0]) * 0.5, (a[1] + b[1]) * 0.5)
 
-    def get_quadrants(self):
+    def get_quadrants(self) -> list:
+        '''
+        Retorna os quadrantes da peça de acordo com os cantos
+
+        Retorno
+        -------
+        list
+            Lista com os quadrantes
+        '''
         return [
             [
                 (self.midpoint(*self.lineAB), self.b),
@@ -79,7 +138,36 @@ class PartImage:
             ]
         ]
 
-    def percentage_to_point(self, percentage, a, b):
+    def percentage_to_point(
+        self,
+        percentage: float,
+        a: tuple,
+        b: tuple
+    ) -> tuple:
+        '''
+        Retorna um ponto percentual de uma reta
+
+        Parâmetros
+        ----------
+        percentage: float
+            Posição em porcentagem da reta
+
+        a: tuple
+            Ponto inicial da reta
+
+        b: tuple
+            Ponto final da reta
+
+        Retorno
+        -------
+        tuple
+            Ponto percentual da reta
+
+        Exemplos
+        -------
+        >>> percentage_to_point(0.5, (0, 0), (10, 10))
+        (5, 5)
+        '''
         xdiff = (b[0] - a[0])
         ydiff = (b[1] - a[1])
 
@@ -89,17 +177,76 @@ class PartImage:
         return (x, y)
 
     def linear_distance(self, a: tuple, b: tuple) -> tuple:
+        '''
+        Calcula a distância linear entre dois pontos em X e em Y
+
+        Parâmetros
+        ----------
+        a: tuple
+            Ponto inicial
+
+        b: tuple
+            Ponto final
+
+        Retorno
+        -------
+        tuple
+            Distância em X e em Y entre os pontos
+
+        Exemplos
+        -------
+        >>> linear_distance((0, 0), (10, 15))
+        (10, 15)
+        '''
         x1, y1 = a
         x2, y2 = b
 
         return (x2 - x1, y2 - y1)
 
-    def percentage_to_size(self, percentage, quadrant):
+    def percentage_to_size(self, percentage: float, quadrant: int) -> int:
+        '''
+        Calcula um tamanho em porcentagem de acordo com o quadrante
+
+        Parâmetros
+        ----------
+        percentage: float
+            Porcentagem do tamanho
+
+        quadrant: int
+            Quadrante
+
+        Retorno
+        -------
+        int
+            Tamanho em porcentagem do quadrante
+        '''
         point = self.get_point(quadrant, percentage, 0)
         distance = self.linear_distance(point, self.quadrants[quadrant][0][0])
         return distance[0]
 
-    def line_intersection(self, line1, line2) -> tuple:
+    def line_intersection(self, line1: tuple, line2: tuple) -> tuple:
+        '''
+        Calcula a interseção entre duas retas
+
+        Parâmetros
+        ----------
+
+        line1: tuple
+            Reta 1
+
+        line2: tuple
+            Reta 2
+
+        Retorno
+        -------
+        tuple
+            Ponto de interseção entre as retas
+
+        Exemplos
+        -------
+        >>> line_intersection(((0, 0), (10, 10)), ((0, 10), (10, 0)))
+        (5, 5)
+        '''
         xdiff = (
             self.linear_distance(*line1)[0],
             self.linear_distance(*line2)[0]
@@ -258,15 +405,17 @@ class PartImage:
             y1 = int(y - size/2)
             x2 = int(x + size/2)
             y2 = int(y + size/2)
+
             crop = self.image[y1:y2, x1:x2]
             crop = cv.resize(crop, (240, 240))
             cropped.append(crop)
 
             if self.pencil:
-                cv.rectangle(self.draw, (x1, y1), (x2, y2), (0, 255, 0), 1)
+                cv.rectangle(self.draw, (x1, y1), (x2, y2), (255, 0, 0), 1)
                 cv.imshow(f'{self.part.name}', self.draw)
 
             cv.imshow(f'{hole.hole_type}', crop)
+
             key = cv.waitKey(0)
             if key == ord('q'):
                 exit()
@@ -297,7 +446,7 @@ class PartImage:
                         (x, y),
                         font,
                         fontScale=0.5,
-                        color=(255, 0, 0)
+                        color=color
                     )
 
     def draw_center(self, color=(255, 0, 0)):
@@ -312,6 +461,38 @@ class PartImage:
 
         cv.line(self.draw, (m111, m112), (m121, m122), color=color)
         cv.line(self.draw, (m211, m212), (m221, m222), color=color)
+
+    def rotate_triangle(self, triangle: tuple) -> tuple:
+        last_x = triangle[0]
+        last_y = triangle[1]
+
+        height, width = self.image.shape
+
+        x = width - last_y
+        y = last_x
+
+        print(x, y)
+        return x, y
+
+    def rotate_part(self):
+        self.image = cv.imread(self.image_path, 0)
+        self.draw = cv.imread(self.image_path, 0)
+        self.image = cv.rotate(self.image, cv.ROTATE_90_CLOCKWISE)
+        self.draw = cv.rotate(self.draw, cv.ROTATE_90_CLOCKWISE)
+
+        self.a = self.rotate_triangle(self.a)
+        self.b = self.rotate_triangle(self.b)
+        self.c = self.rotate_triangle(self.c)
+        self.d = self.rotate_triangle(self.d)
+
+        a, b, c, d = self.a, self.b, self.c, self.d
+
+        self.a = d
+        self.b = a
+        self.c = b
+        self.d = c
+
+        self.calcule_all()
 
     def show(self):
         cv.imshow(f'{self.part.name}', self.draw)
