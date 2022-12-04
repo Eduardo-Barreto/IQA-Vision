@@ -6,7 +6,7 @@ from holes import Hole
 class PartImage:
     def __init__(
         self,
-        image_path: str,
+        image_path: cv.Mat,
         triangles: list,
         part: Part,
         pencil: bool = False
@@ -30,8 +30,9 @@ class PartImage:
         '''
         self.pencil = pencil
         self.image_path = image_path
-        self.image = cv.imread(image_path, 0)
-        self.draw = cv.imread(image_path, 0)
+
+        self.image = image_path.copy()
+        self.draw = image_path.copy()
 
         self.a, self.b, self.c, self.d = self.sort_triangles(triangles)
 
@@ -286,7 +287,7 @@ class PartImage:
         line = ((int(init_x), int(init_y)), (int(end_x), int(end_y)))
 
         if self.pencil:
-            cv.line(self.draw, *line, color=(255, 0, 0))
+            cv.line(self.draw, *line, color=(128, 14, 241))
 
         return line
 
@@ -374,8 +375,8 @@ class PartImage:
             y21 = int(y_parallel[1][0])
             y22 = int(y_parallel[1][1])
 
-            cv.line(self.draw, (x11, x12), (x21, x22), color=(255, 0, 0))
-            cv.line(self.draw, (y11, y12), (y21, y22), color=(255, 0, 0))
+            cv.line(self.draw, (x11, x12), (x21, x22), color=(128, 14, 241))
+            cv.line(self.draw, (y11, y12), (y21, y22), color=(128, 14, 241))
 
         return result_mid
 
@@ -411,18 +412,18 @@ class PartImage:
             cropped.append(crop)
 
             if self.pencil:
-                cv.rectangle(self.draw, (x1, y1), (x2, y2), (255, 0, 0), 1)
+                cv.rectangle(self.draw, (x1, y1), (x2, y2), (128, 14, 241), 1)
                 cv.imshow(f'{self.part.name}', self.draw)
 
             cv.imshow(f'{hole.hole_type}', crop)
 
-            key = cv.waitKey(0)
+            key = cv.waitKey(30)
             if key == ord('q'):
                 exit()
 
         return cropped
 
-    def draw_quadrants(self, color=(255, 0, 0)):
+    def draw_quadrants(self, color=(128, 14, 241)):
         for quadrant in self.quadrants:
             c111 = int(quadrant[0][0][0])
             c112 = int(quadrant[0][0][1])
@@ -449,7 +450,7 @@ class PartImage:
                         color=color
                     )
 
-    def draw_center(self, color=(255, 0, 0)):
+    def draw_center(self, color=(128, 14, 241)):
         m111 = int(self.midpointX[0][0])
         m112 = int(self.midpointX[0][1])
         m121 = int(self.midpointX[1][0])
@@ -496,9 +497,13 @@ class PartImage:
 
     def show(self):
         cv.imshow(f'{self.part.name}', self.draw)
-        key = cv.waitKey(0)
+        key = cv.waitKey(30)
         if key == ord('q'):
             exit()
 
     def close(self):
-        cv.destroyAllWindows()
+        cv.destroyWindow(f'{self.part.name}')
+        cv.destroyWindow('circular')
+        cv.destroyWindow('hexagonal')
+        cv.destroyWindow('cross')
+
