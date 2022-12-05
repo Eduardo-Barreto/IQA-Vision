@@ -10,9 +10,9 @@ db = Database(os.environ['databaseURL'])
 part = db.get_part_by_id('1001')
 
 cap = cv.VideoCapture(1)
-prob_threshold = 0.15
+prob_threshold = 0.2
 nms_threshold = 0.45
-model = ObjectDetection('../', ['Triangles'], prob_threshold)
+model = ObjectDetection('../models', ['Triangles'], prob_threshold)
 
 start_time = 1
 
@@ -48,8 +48,6 @@ while True:
     selected_boxes = [boxes[i] for i in indices]
     selected_scores = [scores[i] for i in indices]
 
-    print(f'nms: {len(prediction) - len(selected_boxes)}')
-
     for i in range(len(selected_boxes)):
         box = selected_boxes[i]
         score = selected_scores[i]
@@ -82,12 +80,26 @@ while True:
         continue
 
     try:
+        right = False
+        counter = 0
         image = PartImage(frame, triangles, part, True)
-        image.draw_quadrants()
-        image.show()
-        image.get_cropped_holes()
-        # image.close()
+        while not right:
+            image.draw_quadrants()
+            image.show()
+            right = image.evaluate_holes()
+
+            if right:
+                print('Yeeea! Right!')
+                break
+
+            if counter == 3:
+                print('Too many tries, wrong part!!')
+                break
+
+            print('oops, lets try again')
+            image.rotate_part()
+            counter += 1
+
     except Exception as e:
         print(e)
-        print(triangles)
         continue

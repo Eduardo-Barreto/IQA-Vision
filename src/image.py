@@ -2,11 +2,13 @@ import cv2 as cv
 from parts import Part
 from holes import Hole
 
+from hole_classification import predict_hole_type
+
 
 class PartImage:
     def __init__(
         self,
-        image_path: cv.Mat,
+        original_image: cv.Mat,
         triangles: list,
         part: Part,
         pencil: bool = False
@@ -16,7 +18,7 @@ class PartImage:
 
         Parâmetros
         ----------
-        image_path: str
+        original_image: str
             Caminho da imagem
 
         triangles: list
@@ -29,15 +31,54 @@ class PartImage:
             Pincel de desenho
         '''
         self.pencil = pencil
-        self.image_path = image_path
+        self.original_image = original_image
 
-        self.image = image_path.copy()
-        self.draw = image_path.copy()
+        self.image = original_image.copy()
+        self.draw = original_image.copy()
 
         self.a, self.b, self.c, self.d = self.sort_triangles(triangles)
+        self.triangles = self.a, self.b, self.c, self.d
 
         self.part = part
         self.calcule_all()
+        self.check_valid_part()
+
+    def proximity(self, value, target, error=0.5):
+        '''
+        Verifica se um valor está próximo de um alvo
+
+        Parâmetros
+        ----------
+        value: int
+            Valor a ser verificado
+
+        target: int
+            Valor alvo
+
+        error: float
+            Erro permitido
+
+        Retorno
+        -------
+        bool
+            True se o valor está próximo do alvo
+        '''
+        return (
+            value > (target * (1 - error)) and
+            value < (target * (1 + error))
+        )
+
+    def check_valid_part(self):
+        '''
+        Verifica se a peça é válida
+        '''
+        if not self.check_horizontal_parallel(self.lineDA, self.lineBC):
+            print(self.triangles)
+            raise Exception('DA is not parallel to BC')
+
+        if not self.check_vertical_parallel(self.lineAB, self.lineCD):
+            print(self.triangles)
+            raise Exception('AB is not parallel to CD')
 
     def sort_triangles(self, triangles: list) -> list:
         sorted_x = sorted(triangles, key=lambda x: x[0])
@@ -311,6 +352,78 @@ class PartImage:
 
         return ((init_x, init_y), (end_x, end_y))
 
+    def check_horizontal_parallel(
+        self,
+        line1: tuple,
+        line2: tuple
+    ) -> bool:
+        '''
+        Verifica se duas retas são paralelas horizontalmente
+
+        Parâmetros
+        ----------
+        line1: tuple
+            Reta 1
+
+        line2: tuple
+            Reta 2
+
+        Retorno
+        -------
+        bool
+            Se as retas são paralelas horizontalmente
+
+        Exemplos
+        -------
+        >>> check_horizontal_parallel(((0, 0), (10, 10)), ((0, 10), (10, 0)))
+        False
+        '''
+        y11 = line1[0][1]
+        y12 = line1[1][1]
+
+        y21 = line2[0][1]
+        y22 = line2[1][1]
+
+        initial_distance = abs(y11 - y21)
+        final_distance = abs(y12 - y22)
+
+        return self.proximity(initial_distance, final_distance)
+
+    def check_vertical_parallel(
+        self, line1: tuple, line2: tuple
+    ) -> bool:
+        '''
+        Verifica se duas retas são paralelas verticalmente
+
+        Parâmetros
+        ----------
+        line1: tuple
+            Reta 1
+
+        line2: tuple
+            Reta 2
+
+        Retorno
+        -------
+        bool
+            Se as retas são paralelas verticalmente
+
+        Exemplos
+        -------
+        >>> check_vertical_parallel(((0, 0), (10, 10)), ((0, 10), (10, 0)))
+        False
+        '''
+        x11 = line1[0][0]
+        x12 = line1[1][0]
+
+        x21 = line2[0][0]
+        x22 = line2[1][0]
+
+        initial_distance = abs(x11 - x21)
+        final_distance = abs(x12 - x22)
+
+        return self.proximity(initial_distance, final_distance)
+
     def get_point(
         self,
         quadrant: int,
@@ -395,8 +508,8 @@ class PartImage:
 
         return holes
 
-    def get_cropped_holes(self):
-        cropped = []
+    def evaluate_holes(self):
+        right = []
         for hole in self.holes:
             x = int(hole.position[0])
             y = int(hole.position[1])
@@ -409,10 +522,19 @@ class PartImage:
 
             crop = self.image[y1:y2, x1:x2]
             crop = cv.resize(crop, (240, 240))
-            cropped.append(crop)
+
+            pred = predict_hole_type(crop)
+
+            right_hole = pred == hole.hole_type
+
+            if right_hole:
+                right.append(crop)
+            else:
+                print(f'Wrong hole type. Expected {hole.hole_type} got {pred}')
 
             if self.pencil:
-                cv.rectangle(self.draw, (x1, y1), (x2, y2), (128, 14, 241), 1)
+                color = (0, 255, 0) if right_hole else (0, 0, 255)
+                cv.rectangle(self.draw, (x1, y1), (x2, y2), color, 1)
                 cv.imshow(f'{self.part.name}', self.draw)
 
             cv.imshow(f'{hole.hole_type}', crop)
@@ -421,7 +543,7 @@ class PartImage:
             if key == ord('q'):
                 exit()
 
-        return cropped
+        return len(right) == len(self.holes)
 
     def draw_quadrants(self, color=(128, 14, 241)):
         for quadrant in self.quadrants:
@@ -467,17 +589,15 @@ class PartImage:
         last_x = triangle[0]
         last_y = triangle[1]
 
-        height, width = self.image.shape
+        height, width, _ = self.image.shape
 
         x = width - last_y
         y = last_x
 
-        print(x, y)
         return x, y
 
     def rotate_part(self):
-        self.image = cv.imread(self.image_path, 0)
-        self.draw = cv.imread(self.image_path, 0)
+        self.draw = self.image.copy()
         self.image = cv.rotate(self.image, cv.ROTATE_90_CLOCKWISE)
         self.draw = cv.rotate(self.draw, cv.ROTATE_90_CLOCKWISE)
 
@@ -506,4 +626,3 @@ class PartImage:
         cv.destroyWindow('circular')
         cv.destroyWindow('hexagonal')
         cv.destroyWindow('cross')
-
