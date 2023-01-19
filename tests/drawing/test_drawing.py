@@ -3,11 +3,13 @@ path.append('../src')
 from database import Database
 from image import PartImage
 import os
+import cv2 as cv
+from time import sleep
 
 db = Database(os.environ['databaseURL'])
 
-path_images = './drawing/images/A'
-part = db.get_part_by_id('1001')
+path_images = './drawing/images/B'
+part = db.get_part_by_id('1002')
 
 # get all images in the folder
 files = os.listdir(path_images)
@@ -28,10 +30,11 @@ for file in files:
             y = int(line[1])
             triangles.append((x, y))
 
-    image = PartImage(file, triangles, part, True)
-    image.rotate_part()
+    # load file into cv2 image
+    image = cv.imread(file)
+    image = PartImage(image, triangles, part, True)
     image.draw_quadrants()
     image.show()
-    image.get_cropped_holes()
-
+    image.evaluate_holes()
+    sleep(2)
     image.close()

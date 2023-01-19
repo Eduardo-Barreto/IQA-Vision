@@ -41,7 +41,6 @@ class PartImage:
 
         self.part = part
         self.calcule_all()
-        self.check_valid_part()
 
     def proximity(self, value, target, error=0.5):
         '''
@@ -68,17 +67,6 @@ class PartImage:
             value < (target * (1 + error))
         )
 
-    def check_valid_part(self):
-        '''
-        Verifica se a peça é válida
-        '''
-        if not self.check_horizontal_parallel(self.lineDA, self.lineBC):
-            print(self.triangles)
-            raise Exception('DA is not parallel to BC')
-
-        if not self.check_vertical_parallel(self.lineAB, self.lineCD):
-            print(self.triangles)
-            raise Exception('AB is not parallel to CD')
 
     def sort_triangles(self, triangles: list) -> list:
         sorted_x = sorted(triangles, key=lambda x: x[0])
@@ -534,7 +522,7 @@ class PartImage:
 
             if self.pencil:
                 color = (0, 255, 0) if right_hole else (0, 0, 255)
-                cv.rectangle(self.draw, (x1, y1), (x2, y2), color, 1)
+                cv.rectangle(self.draw, (x1, y1), (x2, y2), color, 2)
                 cv.imshow(f'{self.part.name}', self.draw)
 
             cv.imshow(f'{hole.hole_type}', crop)
@@ -555,8 +543,8 @@ class PartImage:
             c212 = int(quadrant[1][0][1])
             c221 = int(quadrant[1][1][0])
             c222 = int(quadrant[1][1][1])
-            cv.line(self.draw, (c111, c112), (c121, c122), color=color)
-            cv.line(self.draw, (c211, c212), (c221, c222), color=color)
+            cv.line(self.draw, (c111, c112), (c121, c122), color=color, thickness=2)
+            cv.line(self.draw, (c211, c212), (c221, c222), color=color, thickness=2)
 
             for points in quadrant:
                 for point in points:
@@ -582,8 +570,8 @@ class PartImage:
         m221 = int(self.midpointY[1][0])
         m222 = int(self.midpointY[1][1])
 
-        cv.line(self.draw, (m111, m112), (m121, m122), color=color)
-        cv.line(self.draw, (m211, m212), (m221, m222), color=color)
+        cv.line(self.draw, (m111, m112), (m121, m122), color=color, thickness=2)
+        cv.line(self.draw, (m211, m212), (m221, m222), color=color, thickness=2)
 
     def rotate_triangle(self, triangle: tuple) -> tuple:
         last_x = triangle[0]
