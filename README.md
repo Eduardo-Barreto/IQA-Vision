@@ -90,6 +90,8 @@ Todas as peças possuem entalhes triangulares em suas extremidades, que são uti
 
 ### Rotina de validação
 
+https://user-images.githubusercontent.com/34964398/213334764-cbb0741b-ed0d-4542-916e-b644fc78e77c.mp4
+
 Assim que uma peça nova chega na visão da câmera, a rotina de validação é a seguinte:
 
 1. Um modelo de detecção de objetos é utilizado para detectar os entalhes triangulares na peça e obter a posição deles.
@@ -120,6 +122,9 @@ Quando usamos quadrantes, a peça é dividida em 4 partes, e cada uma delas é i
 O segredo está em usar linhas paralelas às bordas para desenhar as linhas de referência da posição do furo, e não linhas paralelas à borda da imagem.
 
 Veja esse exemplo com a peça `B` totalmente inclinada:
+
+https://user-images.githubusercontent.com/34964398/213334711-8cb00d7c-925e-444e-9645-ad426b3e5a24.mp4
+
 
 # 📫 Contribuindo
 Se quiser contribuir com este projeto basta seguir essas etapas:
