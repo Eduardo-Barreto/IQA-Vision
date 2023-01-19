@@ -14,8 +14,8 @@
 ---
 # ▶️ Demonstração
 <p align="center">
-    <img src="Images/right.gif" alt="Peça A" width="50%"></img>
-    <img src="Images/wrong.gif" alt="Peça B" width="49%"></img>
+    <img src="Images/right.gif" alt="Peça B certa" width="50%"></img>
+    <img src="Images/wrong.gif" alt="Peça B errada" width="49%"></img>
 </p>
 
 > Peça `B` correta (esquerda) e peça `B` errada (direita). Resultado no console no canto inferior direito
@@ -77,7 +77,7 @@ Para desenvolvermos o projeto, criamos algumas peças para serem utilizadas como
 
 <p align="center">
     <a href="https://a360.co/3FMKbrW">
-        <img src="Images/a+.gif" alt="Peça A" width="50%"></img>
+        <img src="Images/a+.gif" alt="Peça A" width="49%"></img>
     </a>
     <a href="https://a360.co/3Uq6Q1t">
         <img src="Images/b+.gif" alt="Peça B" width="49%"></img> 
